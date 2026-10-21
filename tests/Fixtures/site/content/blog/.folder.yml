@@ -1,0 +1,3 @@
+# glob without quotes, like in the real content
+title: Fixture blog
+filter: *.md

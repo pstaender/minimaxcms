@@ -1,0 +1,58 @@
+{
+  "name": "zeitpulse/minimaxcms",
+  "description": "minimaxcms - a minimal flat file markdown first cms",
+  "type": "cms",
+  "license": "MIT",
+  "version": "1.0.0",
+  "keywords": [
+    "cms"
+  ],
+  "authors": [
+    {
+      "name": "Philipp Staender",
+      "email": "pstaender@mailbox.org",
+      "homepage": "https://github.com/pstaender/minimaxcms"
+    }
+  ],
+  "require": {
+    "php": ">=8.3",
+    "league/commonmark": "^2.10",
+    "notrab/dumbo": "^1.4",
+    "symfony/yaml": "^7.4",
+    "vlucas/phpdotenv": "^5.7"
+  },
+  "require-dev": {
+    "pestphp/pest": "^4.7",
+    "symfony/var-dumper": "^7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Zeitpulse\\MiniMaxCMS\\": "cms/"
+    },
+    "files": [
+      "cms/Helper/globals.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "start": [
+      "Composer\\Config::disableProcessTimeout",
+      "APP_ENV=development php -S localhost:8000 -t public public/index.php"
+    ],
+    "test": "pest"
+  },
+  "scripts-descriptions": {
+    "start": "Start the local dev server on http://localhost:8000",
+    "test": "Run the Pest test suite"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}

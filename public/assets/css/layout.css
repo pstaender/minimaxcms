@@ -1,0 +1,18 @@
+header, footer {
+    max-width: var(--max-readable-width);
+    margin: 0 auto;
+    padding: var(--space);
+}
+body {
+    text-align: center;
+    display: grid;
+    place-content: center;
+    background: #d8e4ec;
+}
+html, body {
+    height: 100%;
+}
+.tagline, footer {
+    opacity: 0.5;
+    margin-top: 0.25rem;
+}

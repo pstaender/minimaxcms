@@ -1,0 +1,9 @@
+{
+  "301": {
+    "old-about": "/about"
+  },
+  "302": {
+    "/temp/": "/blog/",
+    "external": "https://example.com/"
+  }
+}
