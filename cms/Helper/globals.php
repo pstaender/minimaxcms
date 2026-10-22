@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Zeitpulse\MiniMaxCMS\Media\ImageOptimizer;
+
 /*
  * Global template helpers (no namespace, so templates can call them without `use`).
  */
@@ -53,5 +55,43 @@ if (!function_exists('esc')) {
     function esc(string|int|float|null $value): string
     {
         return Html::esc($value);
+    }
+}
+
+if (!function_exists('optimized_content_image')) {
+    /**
+     * URL of a content image (e.g. `2026/hello.png`) converted to AVIF and cached in
+     * `public/media/images/`, e.g. `/media/images/7abed….avif`. Returns `$file` unchanged
+     * if Imagick/GD can't convert it, or if it is a WebP/AVIF of about 100 KB already (auto mode).
+     *
+     * @param int|null $maxFileSize roughly, in KB (null: auto)
+     * @param int|null $quality 0–100 (null: auto, depending on the resolution)
+     */
+    function optimized_content_image(string $file, ?int $maxFileSize = null, ?int $quality = null): string
+    {
+        static $optimizer = null;
+        if ($optimizer === null) {
+            $config = Config::load(dirname(__DIR__));
+            $optimizer = new ImageOptimizer($config->contentDir, $config->publicDir);
+        }
+
+        return $optimizer->url($file, $maxFileSize, $quality);
+    }
+}
+
+if (!function_exists('optimized_content_images')) {
+    /**
+     * Rendered HTML with every local `<img>` pointing to its optimized AVIF
+     * (see `optimized_content_image()`), e.g. `optimized_content_images($page->content()->md())`.
+     *
+     * @param int|null $maxFileSize roughly, in KB (null: auto)
+     * @param int|null $quality 0–100 (null: auto, depending on the resolution)
+     */
+    function optimized_content_images(string $html, ?int $maxFileSize = null, ?int $quality = null): string
+    {
+        return ImageOptimizer::replaceImages(
+            $html,
+            static fn (string $file): string => optimized_content_image($file, $maxFileSize, $quality),
+        );
     }
 }

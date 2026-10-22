@@ -9,12 +9,14 @@ use Psr\Http\Message\ResponseInterface;
 use Throwable;
 use Zeitpulse\MiniMaxCMS\Config\Config;
 use Zeitpulse\MiniMaxCMS\Content\ContentRepository;
+use Zeitpulse\MiniMaxCMS\View\DebugPage;
 use Zeitpulse\MiniMaxCMS\View\View;
 
 /**
  * Renders `content/404.php` and `content/500.php` (plain text fallbacks if they are missing or fail).
  *
  * Error pages get `$status` and, for 500, `$error` (the Throwable in development, null in production).
+ * With `'debug' => true`, 500 errors show the built-in DebugPage (message and stack trace) instead.
  */
 final readonly class ErrorController
 {
@@ -37,6 +39,11 @@ final readonly class ErrorController
     public function serverError(Throwable $error, Context $c): ResponseInterface
     {
         error_log((string) $error);
+
+        if ($this->config->isDebug()) {
+            return $c->html((new DebugPage($this->config->rootDir))->render($error, $c->req->method(), $c->req->url()), 500);
+        }
+
         $details = $this->config->isDevelopment() ? $error : null;
 
         try {

@@ -3,7 +3,7 @@ template: frontpage
 ---
 # Hello
 
-![Hello](./monster.svg)
+<a href="/blog">![Hello](./monster.svg)</a>
 
 [Read more about the MiniMaxCMS](/about)
 
@@ -12,6 +12,7 @@ main {
     box-shadow: var(--box-shadow);
     border-radius: 10px;
     background: #fff;
+    text-align: center;
 }
 img[alt="Hello"] {
     height: 300px;

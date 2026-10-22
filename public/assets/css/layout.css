@@ -2,9 +2,9 @@ header, footer {
     max-width: var(--max-readable-width);
     margin: 0 auto;
     padding: var(--space);
+    width: 100%;
 }
 body {
-    text-align: center;
     display: grid;
     place-content: center;
     background: #d8e4ec;

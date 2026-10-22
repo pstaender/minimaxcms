@@ -102,6 +102,14 @@ final readonly class Config
     }
 
     /**
+     * `'debug' => true` shows a detailed error page with stack trace instead of `content/500.php`.
+     */
+    public function isDebug(): bool
+    {
+        return (bool) $this->get('debug', false);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private static function defaults(): array

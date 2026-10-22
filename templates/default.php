@@ -1,6 +1,6 @@
 <?php /** @var Zeitpulse\MiniMaxCMS\Content\Page $page */ ?>
 <?= partial('head') ?>
 <article>
-<?= $page->content() ?>
+<?= optimized_content_images($page->content()->md()) ?>
 </article>
 <?= partial('footer') ?>
