@@ -1,19 +1,24 @@
 # MiniMax CMS
 
-A flat file, markdown first minimal CMS for PHP.
+A flat file, markdown first, minimal CMS for PHP.
 
+- No database and no admin UI: every file in `content/` is a page, written in Markdown, PHP, HTML or plain text
+- Plain PHP templates, styled with [minimax.css](https://www.npmjs.com/package/minimaxcss)
+- Content images converted to AVIF on the fly
 - PHP 8.3+, routed with [Dumbo](https://github.com/notrab/dumbo)
-- Content lives in plain files: Markdown, PHP, HTML or text
 
 ## Getting started
 
+Create a new site from [Packagist](https://packagist.org/packages/zeitpulse/minimaxcms):
+
 ```sh
-composer install
+composer create-project zeitpulse/minimaxcms my-site
+cd my-site
 cp .env.example .env          # optional
 composer start                # dev server with APP_ENV=development
 ```
 
-Open http://localhost:8000.
+Open http://localhost:8000, then edit `content/index.md`.
 
 ### Configuration
 
@@ -39,6 +44,7 @@ variables take precedence over the file.
 | `tagline`       | `''`                          | Shown below the site name                           |
 | `language`      | `en`                          | `lang` attribute of the page                        |
 | `environment`   | `APP_ENV`, else `production`  | `development` shows error messages on the 500 page. |
+| `debug`         | `false`                       | `true` shows a detailed error page with stack trace |
 | `publicDir`     | `public`                      | Web root (`static_file_url()` looks up files here)  |
 | `contentDir`    | `content`                     | Content folder                                      |
 | `templateDir`   | `templates`                   | Template folder                                     |
@@ -50,17 +56,19 @@ available in templates via `$config->get('key')`.
 ### Deployment
 
 Point the web server's document root at `public/` and send every request that doesn't match an existing file to
-`public/index.php`. Run `composer install --no-dev` on the server.
+`public/index.php` (for Apache, `public/.htaccess` already does this). Run `composer install --no-dev` on the server,
+and make sure the web server can write to `public/media/images/` for optimized images.
 
 ## Project layout
 
 | Path         | Purpose                                                                                                   |
 |--------------|-----------------------------------------------------------------------------------------------------------|
-| `public/`    | Web root: `index.php` front controller, `assets/` (static CSS, JS, images) and `media/`  (resized images) |
-| `config/`    | Site settings, per host                                                                                   |
-| `content/`   | The site's pages, folders and media                                                                       |
-| `templates/` | PHP templates and `partials/`                                                                             |
-| `src/`       | Site-specific code                                                                                        |
+| `public/`    | Web root: `index.php` front controller, `assets/` (static CSS, JS, images) and `media/` (optimized images) |
+| `config/`    | Site settings, per host                                                                                    |
+| `content/`   | The site's pages, folders and media                                                                        |
+| `templates/` | PHP templates and `partials/`                                                                              |
+| `cms/`       | The CMS itself (namespace `Zeitpulse\MiniMaxCMS`)                                                          |
+| `tests/`     | Pest tests and their fixture site                                                                          |
 
 ## Writing content
 
@@ -102,13 +110,13 @@ Example front matter:
 ```markdown
 ---
 template: blog
-title: Why 2026 is a major shift in software development
+title: Hello world
 date: 2026-10-10
 ---
 
-# We are entering a new software era
+# My first post
 
-![Logo](lightcraft_icon.webp)
+![A photo](photo.jpg)
 ```
 
 ### Markdown source
@@ -138,10 +146,40 @@ get a new file.
   are returned unchanged.
 - If neither Imagick nor GD can write AVIF, or the file isn't a raster image (SVG, …), the path is returned unchanged.
 
-The URL is not escaped, so wrap it in `esc()`.
+The URL is not escaped, so wrap it in `esc()`. Start the path with `/`: if the image can't be converted, the path is
+returned unchanged and is then used as the URL.
 
-`optimized_content_images($html, …)` does the same for every local `<img>` in rendered HTML. The `blog` template uses
-it, so images in blog entries are served as optimized AVIFs automatically.
+`optimized_content_images($html, …)` does the same for every local `<img>` in rendered HTML. `templates/default.php`
+uses it, so images in Markdown pages are served as optimized AVIFs automatically.
+
+#### Example: optimizing images
+
+A single image in a template, e.g. a header image named in the front matter (`image: /blog/header.jpg`):
+
+```php
+<?php if ($image = $page->meta('image')): ?>
+    <img src="<?= esc(optimized_content_image($image, maxFileSize: 150)) ?>" alt="">
+<?php endif; ?>
+```
+
+Every image of a Markdown page, as in `templates/default.php`:
+
+```php
+<?= partial('head') ?>
+<article>
+<?= optimized_content_images($page->content()->md()) ?>
+</article>
+<?= partial('footer') ?>
+```
+
+With settings for all images of the page, e.g. smaller files for a gallery:
+
+```php
+<?= optimized_content_images($page->content()->md(), maxFileSize: 60) ?>
+```
+
+In the Markdown itself nothing changes: `![A photo](photo.jpg)` in `content/blog/index.md` becomes
+`<img src="/media/images/c52b….avif" alt="A photo" />`.
 
 ### Folders
 
@@ -170,17 +208,12 @@ folder, ordered by `sort`:
 - A leading `-` reverses the order. For example, `-date` lists the newest first. Index files and subfolders aren't
   listed.
 
-### Blog entries on the home page
-
-The home page (`templates/frontpage.php`) lists every blog entry, grouped by year with the newest year first. Every
-top-level folder with a four-digit name, such as `content/2026/`, counts as a year, but only if it has a `.folder.yml`.
-Within a year, entries follow that folder's `sort` setting. To show the highest number first, use `sort: -name`, and to
-show the newest date first, use `sort: -date`.
-
 ### Error pages
 
 - `content/404.php` is shown for unknown URLs.
 - `content/500.php` is shown when something goes wrong. It gets `$status`, plus `$error` in development.
+- With `'debug' => true` in the config, errors show a built-in debug page instead of `content/500.php`: the exception,
+  its previous exceptions and the stack trace, with the source around each line. Never enable it in production.
 - Neither page can be opened directly.
 
 ### Redirects
@@ -238,16 +271,10 @@ Templates are plain PHP files in `templates/`. These variables and helpers are a
 
 ## Styling
 
-`public/assets/css/minimax/` holds a copy of minimax.css; its upstream commit is recorded in `VERSION`. Pages load these
-files in order:
-
-1. `minimax.css`
-2. `minimax-din-a4.css`
-3. `minimax-monospace.css`
-4. `app.css`
-
-Don't edit the minimax files. Customize the look in `app.css`, preferably by overriding minimax's custom properties such
-as `--space` and `--max-readable-width`.
+`templates/partials/head.php` loads [minimax.css](https://www.npmjs.com/package/minimaxcss)
+(`minimax-starter.css`) from a CDN, then `public/assets/css/layout.css` for the site's own styles. Customize the look in
+`layout.css`, preferably by overriding minimax's custom properties such as `--space` and `--max-readable-width`.
+Markdown pages can also bring their own `<style>` tag.
 
 ## Tests
 

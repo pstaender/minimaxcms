@@ -42,3 +42,20 @@ it('rejects template names that leave the templates folder', function () {
 it('escapes with esc()', function () {
     expect(esc('<a href="x">\'&'))->toBe('&lt;a href=&quot;x&quot;&gt;&apos;&amp;');
 });
+
+it('uses the config of the rendering template in optimized_content_image()', function () {
+    $dir = tempSite();
+    mkdir("{$dir}/content");
+    mkdir("{$dir}/templates");
+    file_put_contents("{$dir}/content/logo.svg", '<svg xmlns="http://www.w3.org/2000/svg"/>');
+    file_put_contents("{$dir}/templates/image.php", "<?= esc(optimized_content_image('/logo.svg')) ?>");
+    $config = new Zeitpulse\MiniMaxCMS\Config\Config(rootDir: $dir);
+
+    $view = new View($config, new Zeitpulse\MiniMaxCMS\Content\Site(repository()));
+
+    expect($view->render('image'))->toBe('/logo.svg');
+});
+
+it('only allows optimized_content_image() inside templates', function () {
+    expect(fn () => optimized_content_image('/blog/pixel.png'))->toThrow(LogicException::class);
+});

@@ -20,8 +20,8 @@ it('renders GitHub flavoured markdown', function () {
 });
 
 it('autolinks URLs', function () {
-    expect($this->markdown->toHtml('See https://noisetransfer.com'))
-        ->toContain('<a href="https://noisetransfer.com">https://noisetransfer.com</a>');
+    expect($this->markdown->toHtml('See https://example.com'))
+        ->toContain('<a href="https://example.com">https://example.com</a>');
 });
 
 it('adds ?timestamp=<mtime> to local images, resolved against the page URL', function () {
@@ -57,7 +57,7 @@ it('renders <style> tags but still filters <script>', function () {
 });
 
 it('renders footnotes', function () {
-    $html = $this->markdown->toHtml("Noise[^1] to voice.\n\n[^1]: A footnote.");
+    $html = $this->markdown->toHtml("Some text[^1].\n\n[^1]: A footnote.");
 
     expect($html)
         ->toContain('<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" role="doc-noteref">1</a></sup>')

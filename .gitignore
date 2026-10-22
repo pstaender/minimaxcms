@@ -1,5 +1,6 @@
 # Composer
 /vendor/
+/public/media/
 
 # Environment / secrets
 .env

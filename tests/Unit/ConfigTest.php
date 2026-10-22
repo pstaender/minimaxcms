@@ -39,3 +39,8 @@ it('resolves the site folders', function () {
         ->and($config->templateDir)->toBe('/srv/site/templates')
         ->and($config->redirectsFile)->toBe('/srv/site/content/redirects.json');
 });
+
+it('disables debug by default', function () {
+    expect((new Config('/srv/site'))->isDebug())->toBeFalse()
+        ->and(Config::fromArray('/srv/site', ['debug' => true])->isDebug())->toBeTrue();
+});

@@ -85,15 +85,23 @@ final class View
      */
     public static function staticFileUrl(string $path): string
     {
-        $current = end(self::$rendering);
-        if ($current === false) {
-            throw new LogicException('static_file_url() can only be used inside a template.');
-        }
-
         $url = UrlPath::normalize($path);
-        $file = $url !== null ? $current[0]->config->publicDir . rawurldecode($url) : null;
+        $file = $url !== null ? self::currentConfig('static_file_url()')->publicDir . rawurldecode($url) : null;
 
         return $file !== null && is_file($file) ? "{$url}?timestamp=" . filemtime($file) : $path;
+    }
+
+    /**
+     * The config of the template being rendered, for global helpers like `optimized_content_image()`.
+     */
+    public static function currentConfig(string $helper): Config
+    {
+        $current = end(self::$rendering);
+        if ($current === false) {
+            throw new LogicException("{$helper} can only be used inside a template.");
+        }
+
+        return $current[0]->config;
     }
 
     /**

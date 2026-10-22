@@ -1,1 +1,0 @@
-![Example image](dott_intro.jpg)

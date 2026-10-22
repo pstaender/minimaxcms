@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 use Zeitpulse\MiniMaxCMS\Media\ImageOptimizer;
+use Zeitpulse\MiniMaxCMS\Helper\Html;
+use Zeitpulse\MiniMaxCMS\View\View;
 
 /*
  * Global template helpers (no namespace, so templates can call them without `use`).
  */
 
-use Zeitpulse\MiniMaxCMS\Helper\Html;
-use Zeitpulse\MiniMaxCMS\View\View;
+
 
 if (!function_exists('partial')) {
     /**
@@ -69,11 +70,10 @@ if (!function_exists('optimized_content_image')) {
      */
     function optimized_content_image(string $file, ?int $maxFileSize = null, ?int $quality = null): string
     {
-        static $optimizer = null;
-        if ($optimizer === null) {
-            $config = Config::load(dirname(__DIR__));
-            $optimizer = new ImageOptimizer($config->contentDir, $config->publicDir);
-        }
+        static $optimizers = [];
+        $config = View::currentConfig('optimized_content_image()');
+        $optimizer = $optimizers["{$config->contentDir}|{$config->publicDir}"]
+            ??= new ImageOptimizer($config->contentDir, $config->publicDir);
 
         return $optimizer->url($file, $maxFileSize, $quality);
     }

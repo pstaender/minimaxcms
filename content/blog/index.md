@@ -1,3 +1,6 @@
 # Blog pages
 
-[An example page with pure php](2026/content_as_php_file)
+![Example image](dott_intro.jpg)
+
+* [Test exception](2026/test_exception)
+* [An example page with pure html](2026/content_as_html)
