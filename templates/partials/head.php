@@ -9,6 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <title><?= esc($page->title() ?? 'Untitled') ?> · <?= esc($config->siteName) ?></title>
     <link rel="stylesheet" href="https://unpkg.com/minimaxcss@latest/minimax-starter.css"/>
     <link rel="stylesheet" href="<?= static_file_url('/assets/css/layout.css') ?>">
@@ -17,5 +18,9 @@
 <header>
     <a href="/" class="site-name"><?= esc($config->siteName) ?></a>
     <p class="tagline"><?= esc($config->tagline) ?></p>
+    <nav>
+        <a href="/blog/">Blog</a>
+        <a href="/about">About</a>
+    </nav>
 </header>
 <main>

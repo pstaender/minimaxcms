@@ -1,17 +1,182 @@
-header, footer {
-    max-width: var(--max-readable-width);
+/* Layout of the example site, on top of minimax.css: grayscale, one readable column. */
+:root {
+    --text-color: #18181b;
+    --muted-color: #71717a;
+    --line-color: #e4e4e7;
+    --surface-color: #f4f4f5;
+    --background-color: #fff;
+    --active-color: var(--text-color);
+    --max-readable-width: 42rem;
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: #f4f4f5;
+        --muted-color: #a1a1aa;
+        --line-color: #27272a;
+        --surface-color: #18181b;
+        --background-color: #09090b;
+    }
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+header, main, footer {
+    width: 100%;
+    max-width: calc(var(--max-readable-width) + 2 * var(--space));
     margin: 0 auto;
     padding: var(--space);
-    width: 100%;
 }
-body {
+
+main {
+    flex: 1;
+    padding-block: calc(3 * var(--space));
+}
+
+a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--muted-color);
+}
+
+a:hover {
+    text-decoration-color: currentColor;
+}
+
+/* Header and footer */
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-small) calc(2 * var(--space));
+    border-bottom: 1px solid var(--line-color);
+}
+
+.site-name {
+    font-weight: var(--font-weight-semi-bold);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+}
+
+.tagline {
+    margin: 0;
+    color: var(--muted-color);
+    font-size: 0.875rem;
+}
+
+header nav {
+    display: flex;
+    gap: var(--space);
+    margin-left: auto;
+}
+
+header nav a {
+    color: var(--muted-color);
+    font-weight: normal;
+    text-decoration: none;
+}
+
+header nav a:hover,
+header nav a[aria-current="page"] {
+    color: var(--text-color);
+}
+
+footer {
+    border-top: 1px solid var(--line-color);
+    color: var(--muted-color);
+}
+
+/* Content */
+
+article img,
+.frontpage img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+code {
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+    background: var(--surface-color);
+}
+
+/* Front page */
+
+.frontpage h1 {
+    font-size: clamp(2.25rem, 6vw, 3.25rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: var(--space);
+}
+
+.frontpage h1 + p {
+    color: var(--muted-color);
+    font-size: 1.2rem;
+    max-width: 34rem;
+}
+
+.frontpage .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-small);
+    margin-bottom: calc(3 * var(--space));
+}
+
+.frontpage .actions a {
+    padding: 0.6em 1.1em;
+    border: 1px solid var(--line-color);
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.frontpage .actions a:first-child {
+    border-color: var(--text-color);
+    background: var(--text-color);
+    color: var(--background-color);
+}
+
+.frontpage .actions a:hover {
+    border-color: var(--text-color);
+}
+
+.frontpage h2 {
+    margin-top: calc(2 * var(--space));
+    color: var(--muted-color);
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-semi-bold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.frontpage ul {
     display: grid;
-    place-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space);
+    padding: 0;
+    list-style: none;
 }
-html, body {
-    height: 100%;
+
+.frontpage li {
+    padding: var(--space);
+    border: 1px solid var(--line-color);
+    border-radius: 8px;
+    color: var(--muted-color);
 }
-.tagline, footer {
-    opacity: 0.5;
-    margin-top: 0.25rem;
+
+.frontpage li strong {
+    display: block;
+    color: var(--text-color);
 }

@@ -274,6 +274,9 @@ Templates are plain PHP files in `templates/`. These variables and helpers are a
 `templates/partials/head.php` loads [minimax.css](https://www.npmjs.com/package/minimaxcss)
 (`minimax-starter.css`) from a CDN, then `public/assets/css/layout.css` for the site's own styles. Customize the look in
 `layout.css`, preferably by overriding minimax's custom properties such as `--space` and `--max-readable-width`.
+The example site is grayscale and follows the system's light or dark mode: its colors are the custom properties at the
+top of `layout.css` (`--text-color`, `--muted-color`, `--line-color`, `--surface-color`, `--background-color`), and the
+front page styles are scoped to `.frontpage` (`templates/frontpage.php`).
 Markdown pages can also bring their own `<style>` tag.
 
 ## Tests

@@ -5,5 +5,7 @@
  */
 ?>
 <?= partial('head') ?>
+<div class="frontpage">
 <?= $page->content()->md() ?>
+</div>
 <?= partial('footer') ?>
